@@ -37,10 +37,6 @@ public class IndividualCustomerController {
 	public DataResult<List<IndividualCustomerSearchListDto>> getAll(){
 		return this.individualCustomerService.getAll();
 	}
-	@PostMapping("add")
-	public Result add(@RequestBody @Valid CreateIndividualCustomerRequest createIndividualCustomerRequest) {
-		return this.individualCustomerService.save(createIndividualCustomerRequest);
-	}
 	@DeleteMapping("delete")
 	public Result delete(@RequestBody @Valid DeleteIndividualCustomerRequest deleteIndividualCustomerRequest) {
 		return this.individualCustomerService.delete(deleteIndividualCustomerRequest);

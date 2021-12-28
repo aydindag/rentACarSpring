@@ -1,9 +1,8 @@
 package com.etiya.rentACar.business.request.loginAndRegister;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.*;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -28,9 +27,10 @@ public class RegisterCorporateCustomerRequest {
 	 @NotBlank
 	 @NotNull
 	 private String companyName;
-	 
-	 @NotBlank
+
 	 @NotNull
+	 @Size(min = 10, max = 10)
+	 @ApiModelProperty(example = "xxxxxxxxxx")
 	 private String taxNumber;
 	 
 }

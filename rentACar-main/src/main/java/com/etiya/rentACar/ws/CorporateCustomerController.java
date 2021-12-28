@@ -36,10 +36,6 @@ public class CorporateCustomerController {
 	private DataResult<List<CorporateCustomerSearchListDto>> getAll(){
 		return this.corporateCustomerService.getAll();
 	}
-	@PostMapping(name="add")
-	public Result add(@RequestBody @Valid CreateCorporateCustomerRequest createCorporateCustomerRequest) {
-		return this.corporateCustomerService.save(createCorporateCustomerRequest);
-	}
 	@DeleteMapping(name="delete")
 	public Result delete(@RequestBody @Valid DeleteCorporateCustomerRequest deleteCorporateCustomerRequest) {
 		return this.corporateCustomerService.delete(deleteCorporateCustomerRequest);

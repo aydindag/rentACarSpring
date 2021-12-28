@@ -6,6 +6,7 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -36,6 +37,7 @@ public class RegisterIndividualCustomerRequest {
 	 private String lastName;
 	 
 	 @NotNull
+	 @ApiModelProperty(example = "1970-01-01")
 	 private Date birthday;
 
 	 

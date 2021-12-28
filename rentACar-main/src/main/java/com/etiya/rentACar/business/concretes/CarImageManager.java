@@ -8,6 +8,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.etiya.rentACar.business.abstracts.CarService;
+import com.etiya.rentACar.business.constants.messages.CarDamageMessages;
+import com.etiya.rentACar.business.constants.messages.CarImageMessages;
+import com.etiya.rentACar.business.constants.messages.CarMessages;
+import com.etiya.rentACar.core.utilities.results.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,11 +24,6 @@ import com.etiya.rentACar.core.utilities.business.BusinessRules;
 import com.etiya.rentACar.core.utilities.helpers.FileHelper;
 import com.etiya.rentACar.core.utilities.helpers.FileHelperManager;
 import com.etiya.rentACar.core.utilities.mapping.ModelMapperService;
-import com.etiya.rentACar.core.utilities.results.DataResult;
-import com.etiya.rentACar.core.utilities.results.ErrorResult;
-import com.etiya.rentACar.core.utilities.results.Result;
-import com.etiya.rentACar.core.utilities.results.SuccessDataResult;
-import com.etiya.rentACar.core.utilities.results.SuccessResult;
 import com.etiya.rentACar.dataAccess.abstracts.CarImageDao;
 import com.etiya.rentACar.entities.CarImage;
 
@@ -58,7 +57,7 @@ public class CarImageManager implements CarImageService {
 	public Result save(CreateCarImageRequest createCarImageRequest) throws Exception {
 		
 		Result result = BusinessRules.run(checkCarImageCount(createCarImageRequest.getCarId()),
-				carService.checkExistingCar(createCarImageRequest.getCarId()));
+				carService.checkExistingCar(createCarImageRequest.getCarId()), checkIfAnyPhotoIsImported(createCarImageRequest));
 
 		if (result != null) {
 			return result;
@@ -71,7 +70,7 @@ public class CarImageManager implements CarImageService {
 		carImage.setImagePath(
 				fileHelper.returnFilePath(createCarImageRequest.getCarId()).getMessage() + "\\" + carImageName);
 		this.carImageDao.save(carImage);
-		return new SuccessResult();
+		return new SuccessResult(CarImageMessages.add);
 	}
 
 	@Override
@@ -80,7 +79,7 @@ public class CarImageManager implements CarImageService {
 		String toBeDeletedPath = carImage.getImagePath();
 		fileHelper.deleteImage(toBeDeletedPath);
 		this.carImageDao.delete(carImage);
-		return new SuccessResult();
+		return new SuccessResult(CarImageMessages.delete);
 	}
 
 	@Override
@@ -94,15 +93,20 @@ public class CarImageManager implements CarImageService {
 		carImage.setImagePath(
 				fileHelper.returnFilePath(updateCarImageRequest.getCarId()).getMessage() + "\\" + carImageName);
 		this.carImageDao.save(carImage);
-		return new SuccessResult();
+		return new SuccessResult(CarImageMessages.update);
 	}
 
 	public DataResult<List<CarImageSearchListDto>> getCarImageByCarId(int carId) {
+		Result result1 = BusinessRules.run(carService.checkExistingCar(carId));
+		if(result1 != null){
+			return new ErrorDataResult<List<CarImageSearchListDto>>(null, CarMessages.carNotFound);
+		}
 		Result resultCheck = BusinessRules.run(checkIfThereIsNoPicture(carId));
 		if (resultCheck != null) {
 			List<CarImage> carImages = new ArrayList<CarImage>();
 			CarImage carImage1 = new CarImage();
-			carImage1.setImagePath("C:\\Users\\aydin.dag\\Desktop\\carPicture");
+			carImage1.setImagePath("C:\\Users\\aydin.dag\\Desktop\\etiyalogo");
+			carImage1.setCar(carService.getCarAsElementByCarId(carId));
 			carImages.add(carImage1);
 			List<CarImageSearchListDto> list1 = carImages.stream()
 					.map(carImage -> modelMapperService.forDto().map(carImage, CarImageSearchListDto.class))
@@ -122,7 +126,7 @@ public class CarImageManager implements CarImageService {
 		if (file.exists()) {
 			int numberOfFiles = file.listFiles().length;
 			if (numberOfFiles >= 5) {
-				return new ErrorResult("Bir araç için en fazla 5 resim kaydedilebilir.");
+				return new ErrorResult(CarImageMessages.upperImageLimit);
 			}
 		}
 		return new SuccessResult();
@@ -130,12 +134,8 @@ public class CarImageManager implements CarImageService {
 
 	private Result checkIfThereIsNoPicture(int carId) {
 		File file = new File("C:\\Users\\aydin.dag\\Desktop\\img\\car" + carId);
-		if (file.exists()) {
-			if (file.listFiles().length == 0) {
-				return new ErrorResult("default picture");
-			}
-		} else {
-			return new ErrorResult("default picture1");
+		if ((file.exists() && file.listFiles().length == 0) || !file.exists()) {
+				return new ErrorResult();
 		}
 		return new SuccessResult();
 	}
@@ -145,4 +145,10 @@ public class CarImageManager implements CarImageService {
 		return this.carImageDao.getByCar_CarId(carId);
 	}
 
+	private Result checkIfAnyPhotoIsImported(CreateCarImageRequest createCarImageRequest){
+		if (createCarImageRequest.getMultipartFile() == null){
+			return new ErrorResult(CarImageMessages.noImage);
+		}
+		return new SuccessResult();
+	}
 }

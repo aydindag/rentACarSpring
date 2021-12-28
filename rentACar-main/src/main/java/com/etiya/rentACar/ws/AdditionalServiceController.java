@@ -35,7 +35,7 @@ public class AdditionalServiceController {
     public Result delete(@RequestBody @Valid DeleteAdditionalServiceRequest deleteAdditionalServiceRequest){
         return this.additionalServiceService.delete(deleteAdditionalServiceRequest);
     }
-    @PostMapping("update")
+    @PutMapping("update")
     public Result update(@RequestBody @Valid UpdateAdditionalServiceRequest updateAdditionalServiceRequest){
         return this.additionalServiceService.update(updateAdditionalServiceRequest);
     }

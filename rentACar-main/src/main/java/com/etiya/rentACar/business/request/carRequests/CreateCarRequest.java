@@ -39,10 +39,12 @@ public class CreateCarRequest {
 	private int findeksPointCar;
 	
 	@NotNull
-	@NotBlank
-	private String cityName;
+	@Min(1)
+	@Max(81)
+	private int cityId;
 
 	@NotNull
+	@Min(0)
 	private int kilometer;
  
 }

@@ -1,6 +1,7 @@
 package com.etiya.rentACar.business.concretes;
 
 import com.etiya.rentACar.business.abstracts.AdditionalServiceService;
+import com.etiya.rentACar.business.constants.messages.AdditionalServiceMessages;
 import com.etiya.rentACar.business.dtos.AdditionalServiceSearchListDto;
 import com.etiya.rentACar.business.request.additionalServiceRequests.CreateAdditionalServiceRequest;
 import com.etiya.rentACar.business.request.additionalServiceRequests.DeleteAdditionalServiceRequest;
@@ -46,27 +47,33 @@ public class AdditionalServiceManager implements AdditionalServiceService {
         AdditionalService additionalService = modelMapperService.forRequest().
                 map(createAdditionalServiceRequest, AdditionalService.class);
         this.additionalServiceDao.save(additionalService);
-        return new SuccessResult("Additional service is added.");
+        return new SuccessResult(AdditionalServiceMessages.add);
     }
 
     @Override
     public Result delete(DeleteAdditionalServiceRequest deleteAdditionalServiceRequest) {
+        Result result = BusinessRules.run(checkExistingServiceId(deleteAdditionalServiceRequest.getServiceId()));
+        if( result != null){
+            return result;
+        }
         AdditionalService additionalService = modelMapperService.forRequest().
                 map(deleteAdditionalServiceRequest, AdditionalService.class);
         this.additionalServiceDao.delete(additionalService);
-        return new SuccessResult("Additional service is deleted.");
+        return new SuccessResult(AdditionalServiceMessages.delete);
     }
 
     @Override
     public Result update(UpdateAdditionalServiceRequest updateAdditionalServiceRequest) {
-        Result result = BusinessRules.run(checkExistingServiceName(updateAdditionalServiceRequest.getServiceName()));
+        Result result = BusinessRules.run(checkExistingServiceName(updateAdditionalServiceRequest.getServiceName(),
+                        updateAdditionalServiceRequest.getServiceId()),
+                checkExistingServiceId(updateAdditionalServiceRequest.getServiceId()));
         if(result!=null){
             return result;
         }
         AdditionalService additionalService = modelMapperService.forRequest().
                 map(updateAdditionalServiceRequest, AdditionalService.class);
         this.additionalServiceDao.save(additionalService);
-        return new SuccessResult("Additional service is updated.");
+        return new SuccessResult(AdditionalServiceMessages.update);
     }
 
     @Override
@@ -79,14 +86,35 @@ public class AdditionalServiceManager implements AdditionalServiceService {
         return additionalServiceDao.existsByServiceId(serviceId);
     }
 
-    private Result checkExistingServiceName(String serviceName){
+    private Result checkExistingServiceName(String serviceName) {
         String lowerCaseServiceName = serviceName.toLowerCase();
         for (AdditionalService service: additionalServiceDao.findAll()) {
             String lowerCaseService = service.getServiceName().toLowerCase();
             if(lowerCaseService.equals(lowerCaseServiceName)) {
-                return new ErrorResult("Servis ismi tekrar edemez!");
+                return new ErrorResult(AdditionalServiceMessages.existingServiceName);
             }
         }
         return new SuccessResult();
     }
+    private Result checkExistingServiceName(String serviceName, int serviceId) {
+        String lowerCaseServiceName = serviceName.toLowerCase();
+        for (AdditionalService service: additionalServiceDao.findAll()) {
+            if(additionalServiceDao.getByServiceId(serviceId) == service){
+                continue;
+            }
+            String lowerCaseService = service.getServiceName().toLowerCase();
+            if(lowerCaseService.equals(lowerCaseServiceName)) {
+                return new ErrorResult(AdditionalServiceMessages.existingServiceName);
+            }
+        }
+        return new SuccessResult();
+    }
+
+    private Result checkExistingServiceId(int serviceId){
+        if(additionalServiceDao.existsByServiceId(serviceId)){
+            return new SuccessResult();
+        }
+        return new ErrorResult(AdditionalServiceMessages.serviceIdDoesNotExist);
+    }
+
 }

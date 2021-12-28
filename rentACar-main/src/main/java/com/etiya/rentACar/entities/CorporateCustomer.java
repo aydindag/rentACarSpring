@@ -20,6 +20,6 @@ public class CorporateCustomer extends User {
 	@Column(name="company_name")
 	private String companyName;
 	
-	@Column(name="tax_number")
+	@Column(name="tax_number", unique = true)
 	private String taxNumber;
 }

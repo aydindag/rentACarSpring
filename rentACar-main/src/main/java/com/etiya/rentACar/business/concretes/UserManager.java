@@ -3,6 +3,7 @@ package com.etiya.rentACar.business.concretes;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.etiya.rentACar.business.constants.messages.UserMessages;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -44,30 +45,9 @@ public class UserManager implements UserService {
 	}
 
 	@Override
-	public Result save(CreateUserRequest createUserRequest) {
-		User user= modelMapperService.forRequest().map(createUserRequest, User.class);
-		this.userDao.save(user);
-		return new SuccessResult("User added.");
-	}
-
-	@Override
-	public Result delete(DeleteUserRequest deleteUserRequest) {
-		User user= modelMapperService.forRequest().map(deleteUserRequest, User.class);
-		this.userDao.delete(user);
-		return new SuccessResult("User deleted.");
-	}
-
-	@Override
-	public Result update(UpdateUserRequest updateUserRequest) {
-		User user= modelMapperService.forRequest().map(updateUserRequest, User.class);
-		this.userDao.save(user);
-		return new SuccessResult("User updated.");
-	}
-
-	@Override
 	public Result existsByEmail(String email) {
 		if (this.userDao.existsByeMail(email)) {
-			return new ErrorResult();
+			return new ErrorResult(UserMessages.emailDuplicate);
 		}
 		return new SuccessResult();
 	}
@@ -83,6 +63,14 @@ public class UserManager implements UserService {
 	@Override
 	public User getById(int userId) {
 		return userDao.getById(userId);
+	}
+
+	@Override
+	public Result existsById(int id) {
+		if (this.userDao.existsById(id)){
+			return new SuccessResult();
+		}
+		return new ErrorResult(UserMessages.userDoesNotExist);
 	}
 
 }

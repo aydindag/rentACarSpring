@@ -44,8 +44,11 @@ public class UpdateCarRequest {
 	private int findeksPointCar;
 	
 	@NotNull
-	private String cityName;
+	@Min(1)
+	@Max(81)
+	private int cityId;
 
 	@NotNull
+	@Min(0)
 	private int kilometer;
 }

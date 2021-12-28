@@ -17,7 +17,7 @@ public class FileHelperManager implements FileHelper {
 		createNewCarImageFolder(carId);
 		String newFolderName = "car" + carId;
 		String newImageName = createImageName(multipartFile).getMessage();
-		File file = new File("C:\\Users\\halit.mancar\\Desktop\\img\\" + newFolderName + "\\" + newImageName);
+		File file = new File("C:\\Users\\aydin.dag\\Desktop\\img\\" + newFolderName + "\\" + newImageName);
 		file.createNewFile();
 		FileOutputStream os = new FileOutputStream(file);
 		os.write(multipartFile.getBytes());
@@ -46,7 +46,7 @@ public class FileHelperManager implements FileHelper {
 	
 	private Result createNewCarImageFolder(int carId) {
 		String newFolderName = "car" + carId;
-		File newFolder = new File("C:\\Users\\halit.mancar\\Desktop\\img\\" + newFolderName);
+		File newFolder = new File("C:\\Users\\aydin.dag\\Desktop\\img\\" + newFolderName);
 				newFolder.mkdir();
 		return new SuccessResult(newFolderName);
 	}
@@ -56,7 +56,7 @@ public class FileHelperManager implements FileHelper {
 		return new SuccessResult(newImageName);
 	}
 	public Result returnFilePath(int carId) {
-		String path = "C:\\Users\\halit.mancar\\Desktop\\img\\car" + carId;
+		String path = "C:\\Users\\aydin.dag\\Desktop\\img\\car" + carId;
 		return new SuccessResult(path);
 	}
 

@@ -3,6 +3,7 @@ package com.etiya.rentACar.business.concretes;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.etiya.rentACar.business.constants.messages.BrandMessages;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -51,27 +52,31 @@ public class BrandManager implements BrandService{
 		
 		Brand brand = modelMapperService.forRequest().map(createBrandRequest, Brand.class);
 		this.brandDao.save(brand);
-		return new SuccessResult("Brand added.");
+		return new SuccessResult(BrandMessages.add);
 	}
 
 	@Override
 	public Result delete(DeleteBrandRequest deleteBrandRequest) {
+		Result result = BusinessRules.run(checkExistingBrand(deleteBrandRequest.getBrandId()));
+		if(result != null) {
+			return result;
+		}
 		Brand brand = modelMapperService.forRequest().map(deleteBrandRequest, Brand.class);
 		this.brandDao.delete(brand);	
-		return new SuccessResult("Brand deleted.");
+		return new SuccessResult(BrandMessages.delete);
 	}
 
 	@Override
 	public Result update(UpdateBrandRequest updateBrandRequest) {
-	Result result = BusinessRules.run(checkExistingBrand(updateBrandRequest.getBrandName()),
-			checkExistingBrand(updateBrandRequest.getBrandId()));
-		
+		Result result = BusinessRules.run(checkExistingBrand(updateBrandRequest.getBrandName()),
+				checkExistingBrand(updateBrandRequest.getBrandId()));
+
 		if(result != null) {
 			return result;
 		}
 		Brand brand = modelMapperService.forRequest().map(updateBrandRequest, Brand.class);
 		this.brandDao.save(brand);
-		return new SuccessResult("Brand updated.");
+		return new SuccessResult(BrandMessages.update);
 	}
 	
 	private Result checkExistingBrand(String brandName1) {
@@ -79,7 +84,7 @@ public class BrandManager implements BrandService{
 		for (Brand brand : brandDao.findAll()) {
 			String lowerCaseExistingBrandName = brand.getBrandName().toLowerCase();
 			if(lowerCaseBrandName.equals(lowerCaseExistingBrandName)) {
-				return new ErrorResult("Brand name cannot duplicate!");
+				return new ErrorResult(BrandMessages.duplicationError);
 			}
 		}
 		return new SuccessResult();
@@ -88,7 +93,7 @@ public class BrandManager implements BrandService{
 	private Result checkExistingBrand(int brandId){
 		boolean isExisting = brandDao.existsById(brandId);
 		if (!isExisting){
-			return new ErrorResult("ID not found!");
+			return new ErrorResult(BrandMessages.brandIdNotFound);
 		}
 		return new SuccessResult();
 	}

@@ -16,4 +16,5 @@ public interface CorporateCustomerService {
 	Result delete(DeleteCorporateCustomerRequest deleteCorporateCustomerRequest);
 	Result update(UpdateCorporateCustomerRequest updateCorporateCustomerRequest);
 	CorporateCustomer getCustomerByCustomerId(int customerId);
+	Result checkIfTaxNumberIsNumeric(String taxNumber);
 }

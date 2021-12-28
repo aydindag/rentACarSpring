@@ -35,16 +35,4 @@ public class UserController {
 	public DataResult<List<UserSearchListDto>> getAll(){
 		return this.userService.getAll();
 	}
-	@PostMapping("add")
-	public Result add(@RequestBody @Valid CreateUserRequest createUserRequest) {
-		return this.userService.save(createUserRequest);
-	}
-	@DeleteMapping("delete")
-	public Result delete(@RequestBody @Valid DeleteUserRequest deleteUserRequest) {
-		return this.userService.delete(deleteUserRequest);
-	}
-	@PutMapping("update")
-	public Result update(@RequestBody @Valid UpdateUserRequest updateUserRequest) {
-		return this.userService.update(updateUserRequest);
-	}
 }

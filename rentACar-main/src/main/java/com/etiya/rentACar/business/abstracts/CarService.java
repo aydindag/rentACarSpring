@@ -20,10 +20,10 @@ public interface CarService {
 	DataResult<List<CarDetail>> getCarWithColorAndBrandDetails();
 	DataResult<List<CarSearchListDto>> getByBrandId(int brandId);
 	DataResult<List<CarSearchListDto>> getByColorId(int colorId);
-	DataResult<List<CarSearchListDto>> getByCityName(String cityName);
+	DataResult<List<CarSearchListDto>> getByCity(int cityId);
 	DataResult<CarDetailDto> getCarDetailsByCarId(int carId);
 	Car getCarAsElementByCarId(int carId);
-	void updateCarCity(int carId, String cityName);
+	void updateCarCity(int carId, int cityId);
 	void updateCarKilometer(int carId, int kilometer);
 	Result checkExistingCar(int carId);
 	DataResult<List<CarDetail>> getCarsThatAreNotOnMaintenance();

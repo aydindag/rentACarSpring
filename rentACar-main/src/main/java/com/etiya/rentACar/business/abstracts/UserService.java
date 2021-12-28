@@ -12,10 +12,8 @@ import com.etiya.rentACar.entities.User;
 
 public interface UserService {
 	DataResult<List<UserSearchListDto>> getAll();
-	Result save(CreateUserRequest createUserRequest);
-	Result delete(DeleteUserRequest deleteUserRequest);
-	Result update(UpdateUserRequest updateUserRequest);
 	Result existsByEmail(String email);
     DataResult<User> getByEmail(String email);
     User getById(int userId);
+    Result existsById(int id);
 }

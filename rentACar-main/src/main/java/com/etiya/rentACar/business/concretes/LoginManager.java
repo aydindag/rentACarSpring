@@ -1,5 +1,8 @@
 package com.etiya.rentACar.business.concretes;
 
+import com.etiya.rentACar.business.constants.messages.CorporateCustomerMessages;
+import com.etiya.rentACar.business.constants.messages.IndividualCustomerMessages;
+import com.etiya.rentACar.business.constants.messages.LoginAndRegisterMessages;
 import org.springframework.stereotype.Service;
 
 import com.etiya.rentACar.business.abstracts.CorporateCustomerService;
@@ -41,19 +44,33 @@ public class LoginManager implements LoginService {
 		if (result != null) {
 			return result;
 		}
-		return new SuccessResult("Successfuly login");
+		return new SuccessResult(LoginAndRegisterMessages.loginSuccessful);
 	}
 
 	@Override
 	public Result individualCustomerRegister(RegisterIndividualCustomerRequest registerIndividualCustomerRequest) {
-		Result resultCheck = BusinessRules.run(checkPasswordConfirmationForIndividualCustomerRegistration(registerIndividualCustomerRequest));
+		Result resultCheck = BusinessRules.run(checkPasswordConfirmation(registerIndividualCustomerRequest.getPassword(), registerIndividualCustomerRequest.getPasswordConfirm()),
+				userService.existsByEmail(registerIndividualCustomerRequest.getEmail()));
 		if(resultCheck != null) {
 			return resultCheck;
 		}
 		CreateIndividualCustomerRequest result = modelMapperService.forRequest()
 				.map(registerIndividualCustomerRequest, CreateIndividualCustomerRequest.class);
 		this.individualCustomerService.save(result);
-		return new SuccessResult("Customer added");
+		return new SuccessResult(IndividualCustomerMessages.add);
+	}
+	@Override
+	public Result corporateCustomerRegister(RegisterCorporateCustomerRequest registerCorporateCustomerRequest) {
+		Result resultCheck = BusinessRules.run(checkPasswordConfirmation(registerCorporateCustomerRequest.getPassword(),registerCorporateCustomerRequest.getPasswordConfirm()),
+				userService.existsByEmail(registerCorporateCustomerRequest.getEmail()),
+				corporateCustomerService.checkIfTaxNumberIsNumeric(registerCorporateCustomerRequest.getTaxNumber()));
+		if(resultCheck != null) {
+			return resultCheck;
+		}
+		CreateCorporateCustomerRequest result = modelMapperService.forRequest()
+				.map(registerCorporateCustomerRequest, CreateCorporateCustomerRequest.class);
+		this.corporateCustomerService.save(result);
+		return new SuccessResult(CorporateCustomerMessages.add);
 	}
 	
 	private Result checkCustomerByPassword(LoginRequest loginRequest) {
@@ -62,7 +79,7 @@ public class LoginManager implements LoginService {
 
 			if (!this.userService.getByEmail(loginRequest.getEmail()).getData().getPassword()
 					.equals(loginRequest.getPassword())) {
-				return new ErrorResult("Wrong password");
+				return new ErrorResult(LoginAndRegisterMessages.wrongPassword);
 			}
 		}
 		return new SuccessResult();
@@ -71,34 +88,16 @@ public class LoginManager implements LoginService {
 	private Result checkCustomerByEmail(LoginRequest loginRequest) {
 
 		if (this.userService.existsByEmail(loginRequest.getEmail()).isSuccess()) {
-			return new ErrorResult("Wrong e-mail");
-		}
-		return new SuccessResult();
-	}
-	
-	private Result checkPasswordConfirmationForIndividualCustomerRegistration(RegisterIndividualCustomerRequest registerIndividualCustomerRequest) {
-		if(!(registerIndividualCustomerRequest.getPassword()).equals(registerIndividualCustomerRequest.getPasswordConfirm())) {
-			return new ErrorResult("Password does not match");
-		}
-		return new SuccessResult();
-	}
-	private Result checkPasswordConfirmationForCorporateCustomerRegistration(RegisterCorporateCustomerRequest registerCorporateCustomerRequest) {
-		if(!(registerCorporateCustomerRequest.getPassword()).equals(registerCorporateCustomerRequest.getPasswordConfirm())) {
-			return new ErrorResult("Password does not match");
+			return new ErrorResult(LoginAndRegisterMessages.wrongEmail);
 		}
 		return new SuccessResult();
 	}
 
-	@Override
-	public Result corporateCustomerRegister(RegisterCorporateCustomerRequest registerCorporateCustomerRequest) {
-		Result resultCheck = BusinessRules.run(checkPasswordConfirmationForCorporateCustomerRegistration(registerCorporateCustomerRequest));
-		if(resultCheck != null) {
-			return resultCheck;
+	private Result checkPasswordConfirmation(String password, String passwordConfirmation) {
+		if(!password.equals(passwordConfirmation)) {
+			return new ErrorResult(LoginAndRegisterMessages.passwordConfirmationError);
 		}
-		CreateCorporateCustomerRequest result = modelMapperService.forRequest()
-				.map(registerCorporateCustomerRequest, CreateCorporateCustomerRequest.class);
-		this.corporateCustomerService.save(result);
-		return new SuccessResult("Corporate customer added");
+		return new SuccessResult();
 	}
 
 }

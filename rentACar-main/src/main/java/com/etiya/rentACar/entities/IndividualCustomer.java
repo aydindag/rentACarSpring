@@ -9,6 +9,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.sql.Date;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -24,7 +26,7 @@ public class IndividualCustomer extends User {
 	private String lastName;
 	
 	@Column(name="birthday")
-	private String birthday;
+	private Date birthday;
 
 //	@OneToMany(mappedBy="individualCustomer")
 //	private List<Rental> rentals; 

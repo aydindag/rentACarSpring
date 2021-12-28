@@ -43,6 +43,10 @@ public class Car {
 	@ManyToOne
 	@JoinColumn(name="color_id")
 	private Color color;
+
+	@ManyToOne
+	@JoinColumn(name = "city_id")
+	private City city;
 	
 	@OneToMany(mappedBy="car")
 	private List<Rental> rentals;
@@ -52,9 +56,6 @@ public class Car {
 
 	@OneToMany(mappedBy="car")
 	private List<Maintenance> maintenances;
-	
-	@Column(name="city")
-	private String cityName;
 
 	@Column(name="kilometer")
 	private int kilometer;

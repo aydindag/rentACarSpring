@@ -1,5 +1,6 @@
 package com.etiya.rentACar.business.abstracts;
 
+import java.sql.Date;
 import java.util.List;
 
 import com.etiya.rentACar.business.dtos.RentalSearchListDto;
@@ -17,4 +18,5 @@ public interface RentalService {
 	Result update(UpdateRentalRequest updateRentalRequest);
 	Result checkCarIsReturned(int carId);
 	public DataResult<List<AdditionalService>> extractAdditionalServicesFromString(UpdateRentalRequest updateRentalRequest);
+	public Result checkIfEndDateIsAfterStartDate(Date endDate, Date startDate);
 }

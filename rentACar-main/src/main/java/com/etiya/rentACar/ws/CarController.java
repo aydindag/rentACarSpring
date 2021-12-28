@@ -57,9 +57,9 @@ public class CarController {
 	public DataResult<List<CarSearchListDto>> getCarsByColorId(@RequestParam("color_id") int colorId){
 		return this.carService.getByColorId(colorId);
 	}
-	@GetMapping("getCarsWithCityName")
-	public DataResult<List<CarSearchListDto>> getCarsByCityName(@RequestParam("city_name") String cityName){
-		return this.carService.getByCityName(cityName);
+	@GetMapping("getCarsWithCity")
+	public DataResult<List<CarSearchListDto>> getCarsByCityName(@RequestParam("city_id") int cityId){
+		return this.carService.getByCity(cityId);
 	}
 	@PostMapping("add")
 	public Result add(@RequestBody @Valid CreateCarRequest createCarRequest) {
